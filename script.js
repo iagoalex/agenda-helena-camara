@@ -14,8 +14,31 @@ const TOTAL = 80;
       {inicio: '15:55', fim: '16:45', label: '15:55 - 16:45'}
     ];
 
-    let agendamentos = JSON.parse(localStorage.getItem('agendaChromebooks') || '[]');
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxogFODpCWQvA7BfW-gqzDZ1dcGe2ZsXG3NqXm8NcLEIUGSeEzcYCEeD9lOaWiS9x5l/exec';
+
+    let agendamentos = [];
     let selecionados = new Set();
+
+    async function carregarAgendamentos() {
+
+      try {
+    
+        const resposta = await fetch(API_URL);
+        agendamentos = await resposta.json();
+    
+        atualizarDisponibilidade();
+        renderAgenda();
+    
+      } catch (erro) {
+    
+        console.error(erro);
+    
+        msg(
+          'Não foi possível carregar os agendamentos.',
+          false
+        );
+      }
+    }
 
     function hojeISO() {
       const d = new Date();
@@ -106,22 +129,115 @@ const TOTAL = 80;
       const s = document.getElementById('status');
       s.textContent = text; s.className = 'status ' + (ok ? 'ok' : 'err');
     }
-    function agendar() {
-      const professor = document.getElementById('professor').value.trim();
-      const data = document.getElementById('data').value;
-      const h = horarioSelecionado();
-      const inicio = h?.inicio || '';
-      const fim = h?.fim || '';
-      if (!professor || !data || !inicio || !fim) return msg('Preencha professor, data e horários.', false);
-      if (inicio >= fim) return msg('O horário final deve ser maior que o horário inicial.', false);
-      if (!selecionados.size) return msg('Selecione pelo menos um Chromebook.', false);
-      const usados = ocupados(data, inicio, fim);
-      const conflito = [...selecionados].filter(c => usados.has(c));
-      if (conflito.length) return msg('Alguns Chromebooks ficaram indisponíveis. Atualize a seleção.', false);
-      agendamentos.push({
-        id: Date.now(), professor, data, inicio, fim,
-        chromes: [...selecionados].sort((a, b) => a - b)
-      });
+    async function agendar() {
+
+  const professor =
+    document.getElementById('professor').value.trim();
+
+  const data =
+    document.getElementById('data').value;
+
+  const h = horarioSelecionado();
+
+  const inicio = h?.inicio || '';
+  const fim = h?.fim || '';
+
+  if (!professor || !data || !inicio || !fim) {
+    return msg(
+      'Preencha professor, data e horários.',
+      false
+    );
+  }
+
+  if (inicio >= fim) {
+    return msg(
+      'O horário final deve ser maior que o horário inicial.',
+      false
+    );
+  }
+
+  if (!selecionados.size) {
+    return msg(
+      'Selecione pelo menos um Chromebook.',
+      false
+    );
+  }
+
+  const usados = ocupados(data, inicio, fim);
+
+  const conflito =
+    [...selecionados].filter(c => usados.has(c));
+
+  if (conflito.length) {
+
+    return msg(
+      'Alguns Chromebooks ficaram indisponíveis. Atualize a seleção.',
+      false
+    );
+  }
+
+  const dados = {
+
+    acao: 'agendar',
+
+    professor: professor,
+
+    data: data,
+
+    inicio: inicio,
+
+    fim: fim,
+
+    chromes: [...selecionados]
+      .sort((a, b) => a - b)
+  };
+
+  try {
+
+    msg('Salvando agendamento...');
+
+    const resposta = await fetch(API_URL, {
+
+      method: 'POST',
+
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+
+      body: JSON.stringify(dados)
+
+    });
+
+    const resultado = await resposta.json();
+
+    if (!resultado.sucesso) {
+
+      return msg(
+        resultado.mensagem,
+        false
+      );
+    }
+
+    msg(
+      'Agendamento realizado com sucesso!'
+    );
+
+    selecionados.clear();
+
+    document.getElementById('professor').value = '';
+
+    await carregarAgendamentos();
+
+  } catch (erro) {
+
+    console.error(erro);
+
+    msg(
+      'Erro ao salvar o agendamento.',
+      false
+    );
+  }
+}
       salvar();
       msg('Agendamento realizado com sucesso!');
       selecionados.clear();
@@ -129,10 +245,52 @@ const TOTAL = 80;
       atualizarDisponibilidade();
       renderAgenda();
     }
-    function salvar() {localStorage.setItem('agendaChromebooks', JSON.stringify(agendamentos));}
-    function apagar(id) {
-      if (!confirm('Deseja cancelar este agendamento?')) return;
-      agendamentos = agendamentos.filter(a => a.id !== id); salvar(); renderAgenda(); atualizarDisponibilidade();
+    async function apagar(id) {
+
+      if (!confirm('Deseja cancelar este agendamento?')) {
+        return;
+      }
+    
+      try {
+    
+        const resposta = await fetch(API_URL, {
+    
+          method: 'POST',
+    
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8'
+          },
+    
+          body: JSON.stringify({
+            acao: 'apagar',
+            id: id
+          })
+    
+        });
+    
+        const resultado = await resposta.json();
+    
+        if (!resultado.sucesso) {
+    
+          return msg(
+            resultado.mensagem,
+            false
+          );
+        }
+    
+        msg('Agendamento cancelado.');
+    
+        await carregarAgendamentos();
+    
+      } catch (erro) {
+    
+        console.error(erro);
+    
+        msg(
+          'Erro ao cancelar o agendamento.',
+          false
+        );
+      }
     }
     function formatarChromes(arr) {
       return arr.map(c => 'Chrome ' + String(c).padStart(2, '0')).join(', ');
@@ -174,9 +332,55 @@ const TOTAL = 80;
     }
     function escapeHtml(s) {return s.replace(/[&<>"']/g, m => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'}[m]));}
     function hoje() {document.getElementById('filtroData').value = hojeISO(); renderAgenda();}
-    function limparTodos() {
-      if (!confirm('Isso apagará TODOS os agendamentos. Continuar?')) return;
-      agendamentos = []; salvar(); renderAgenda(); atualizarDisponibilidade(); msg('Todos os agendamentos foram apagados.');
+    async function limparTodos() {
+
+      if (!confirm(
+        'Isso apagará TODOS os agendamentos. Continuar?'
+      )) {
+        return;
+      }
+    
+      try {
+    
+        const resposta = await fetch(API_URL, {
+    
+          method: 'POST',
+    
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8'
+          },
+    
+          body: JSON.stringify({
+            acao: 'limparTodos'
+          })
+    
+        });
+    
+        const resultado = await resposta.json();
+    
+        if (!resultado.sucesso) {
+    
+          return msg(
+            resultado.mensagem,
+            false
+          );
+        }
+    
+        msg(
+          'Todos os agendamentos foram apagados.'
+        );
+    
+        await carregarAgendamentos();
+    
+      } catch (erro) {
+    
+        console.error(erro);
+    
+        msg(
+          'Erro ao apagar os agendamentos.',
+          false
+        );
+      }
     }
     ['data', 'horario'].forEach(id => document.getElementById(id).addEventListener('change', () => {
       if (id === 'horario') atualizarPeriodo();
@@ -185,4 +389,8 @@ const TOTAL = 80;
 
     criarHorarios();
     criarChromes();
-    renderAgenda();
+    carregarAgendamentos();
+
+    setInterval(() => {
+      carregarAgendamentos();
+    }, 10000);
