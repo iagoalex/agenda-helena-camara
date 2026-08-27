@@ -238,13 +238,7 @@ const TOTAL = 80;
     );
   }
 }
-      salvar();
-      msg('Agendamento realizado com sucesso!');
-      selecionados.clear();
-      document.getElementById('professor').value = '';
-      atualizarDisponibilidade();
-      renderAgenda();
-    }
+
     async function apagar(id) {
 
       if (!confirm('Deseja cancelar este agendamento?')) {
