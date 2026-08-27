@@ -44,8 +44,6 @@ const TOTAL = 80;
       const d = new Date();
       return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, '0') + "-" + String(d.getDate()).padStart(2, '0');
     }
-    document.getElementById('data').value = hojeISO();
-    document.getElementById('filtroData').value = hojeISO();
 
     function criarHorarios() {
       const select = document.getElementById('horario');
@@ -376,15 +374,39 @@ const TOTAL = 80;
         );
       }
     }
-    ['data', 'horario'].forEach(id => document.getElementById(id).addEventListener('change', () => {
-      if (id === 'horario') atualizarPeriodo();
-      selecionados.clear(); atualizarDisponibilidade();
-    }));
+    
+document.addEventListener('DOMContentLoaded', () => {
 
+    // Define a data atual
+    const dataAtual = hojeISO();
+
+    document.getElementById('data').value = dataAtual;
+    document.getElementById('filtroData').value = dataAtual;
+
+    // Cria os horários
     criarHorarios();
+
+    // Cria os 80 Chromebooks
     criarChromes();
+
+    // Eventos
+    document.getElementById('data').addEventListener('change', () => {
+        selecionados.clear();
+        atualizarDisponibilidade();
+    });
+
+    document.getElementById('horario').addEventListener('change', () => {
+        atualizarPeriodo();
+        selecionados.clear();
+        atualizarDisponibilidade();
+    });
+
+    // Carrega os agendamentos salvos no Google Sheets
     carregarAgendamentos();
 
+    // Atualiza automaticamente a cada 10 segundos
     setInterval(() => {
-      carregarAgendamentos();
+        carregarAgendamentos();
     }, 10000);
+
+});
