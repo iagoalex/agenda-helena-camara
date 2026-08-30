@@ -28,15 +28,17 @@
           <input id="data" type="date">
         </div>
         <div>
-          <label for="horario">Horário</label>
-          <select id="horario"></select>
-        </div>
+          <label for="horario">Horários</label>
+          <select id="horario" multiple size="6"></select>
+          <small>
+            Segure CTRL para selecionar vários horários.
+          </small>
+        </div>     
         <div>
           <label>Período</label>
           <input id="periodoInfo" type="text" value="Selecione um horário" readonly>
         </div>
       </div>
-
       <div style="margin-top:18px">
         <label>Selecione os Chromebooks</label>
         <div id="chromes" class="chromes"></div>
@@ -88,3 +90,4 @@
 </body>
 
 </html>
+
