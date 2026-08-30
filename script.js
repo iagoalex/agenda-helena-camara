@@ -14,7 +14,7 @@ const TOTAL = 80;
       {inicio: '15:55', fim: '16:45', label: '15:55 - 16:45'}
     ];
 
-    const API_URL = 'https://script.google.com/macros/s/AKfycbySifLwp0k5yHJR7FkQ5-vjK1SZS6b7-C2riY366onRs1eFHb-wswPypxIsRUeJF92-/exec';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbww_Bwghpd_waOIaaj9aENczsejzAOGOlIrCKZPMTUc5tX2NFHn8aBkKdKgtkLVhTKK/exec';
 
     let agendamentos = [];
     let selecionados = new Set();
