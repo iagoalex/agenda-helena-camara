@@ -309,7 +309,7 @@ const TOTAL = 80;
           div.innerHTML = `<strong>${escapeHtml(a.professor)}</strong>
       <small>${a.inicio}–${a.fim} · ${a.chromes.length} Chromebook(s)</small>
       <small>${escapeHtml(formatarChromes(a.chromes))}</small>
-    //  <button class="danger" style="margin-top:5px;padding:5px 8px;font-size:11px" onclick="apagar(${a.id})">Cancelar</button>`;
+      <button class="danger" style="margin-top:5px;padding:5px 8px;font-size:11px" onclick="apagar(${a.id})">Cancelar</button>`;
           td.appendChild(div);
         });
         tr.append(tdTime, td); tbody.appendChild(tr);
