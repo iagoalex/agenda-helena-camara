@@ -1,1 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
 
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>Agenda de Chromebooks</title>
+
+</head>
+
+<body>
+  <header>
+    <h1>💻 Agenda de Chromebooks</h1>
+    <p>Agendamento de 80 Chromebooks por professor, data e horário.</p>
+  </header>
+
+  <div class="container">
+    <section class="card">
+      <h2>Novo agendamento</h2>
+      <div class="form-grid">
+        <div>
+          <label for="professor">Nome do professor</label>
+          <input id="professor" type="text" placeholder="Ex.: Professor João Silva">
+        </div>
+        <div>
+          <label for="data">Data</label>
+          <input id="data" type="date">
+        </div>
+        <div>
+          <label for="horario">Horário</label>
+          <select id="horario"></select>
+        </div>
+        <div>
+          <label>Período</label>
+          <input id="periodoInfo" type="text" value="Selecione um horário" readonly>
+        </div>
+      </div>
+
+      <div style="margin-top:18px">
+        <label>Selecione os Chromebooks</label>
+        <div id="chromes" class="chromes"></div>
+        <div class="legend">
+          <span><i class="dot available"></i>Disponível</span>
+          <span><i class="dot sel"></i>Selecionado</span>
+          <span><i class="dot busy-dot"></i>Indisponível no horário</span>
+        </div>
+      </div>
+
+      <div class="actions" style="margin-top:16px">
+        <button class="primary" onclick="agendar()">Agendar Chromebooks</button>
+        <button class="secondary" onclick="selecionarDisponiveis()">Selecionar disponíveis</button>
+        <button class="secondary" onclick="limparSelecao()">Limpar seleção</button>
+      </div>
+      <div id="status" class="status"></div>
+    </section>
+
+    <section class="card">
+      <h2>Agenda</h2>
+      <div class="filters">
+        <div>
+          <label for="filtroData">Visualizar data</label>
+          <input id="filtroData" type="date" onchange="renderAgenda()">
+        </div>
+        <button class="secondary" onclick="hoje()">Hoje</button>
+      </div>
+      <div class="schedule-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th class="time">Horário</th>
+              <th>Agendamentos</th>
+            </tr>
+          </thead>
+          <tbody id="agenda"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Resumo dos Chromebooks</h2>
+      <p id="resumo"></p>
+    </section>
+  </div>
+
+  <script src="script_professores.js"></script>
+
+</body>
+
+</html>
