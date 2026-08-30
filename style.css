@@ -267,3 +267,24 @@ th {
         grid-template-columns: repeat(4, 1fr)
     }
 }
+
+#horario {
+    min-height: 150px;
+}
+
+#horario option {
+    padding: 8px;
+}
+
+#horario option:checked {
+    font-weight: bold;
+}
+
+.form-grid small {
+    display: block;
+    margin-top: 5px;
+    color: #666;
+    font-size: 12px;
+}
+
+
