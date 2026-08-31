@@ -16,7 +16,7 @@ const HORARIOS = [
 ];
 
 const API_URL =
-'https://script.google.com/macros/s/AKfycbxeF8RLEBdFn4VCyQNhGtBjYuB7IXV5C_2jNviRS4ltGl3SHwkwGpVpRDewlME4tYMU/exec';
+'https://script.google.com/macros/s/AKfycbxrVPMHnFjpGNq-H8D_Z2Ox1BnlNI8oPQfNQShrb2AyIy9jO2YJgYweJbZoxFqDfbih/exec';
 
 let agendamentos = [];
 let selecionados = new Set();
