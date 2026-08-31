@@ -47,13 +47,31 @@ async function carregarAgendamentos() {
 
   try {
 
-    const url = API_URL + '?t=' + Date.now();
+    const resposta = await fetch(API_URL, {
 
-    const resposta = await fetch(url, {
-      cache: 'no-store'
+      method: 'POST',
+
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+
+      body: JSON.stringify({
+        acao: 'obter'
+      })
+
     });
 
-    agendamentos = await resposta.json();
+    const resultado = await resposta.json();
+
+    if (!resultado.sucesso) {
+      throw new Error(
+        resultado.mensagem || 'Erro ao carregar agendamentos.'
+      );
+    }
+
+    agendamentos = Array.isArray(resultado.agendamentos)
+      ? resultado.agendamentos
+      : [];
 
     atualizarDisponibilidade();
     renderAgenda();
@@ -523,6 +541,11 @@ async function agendar() {
       );
 
     }
+    if (Array.isArray(resultado.agendamentos)) {
+
+      agendamentos = resultado.agendamentos;
+    
+    }
 
 
     msg(
@@ -539,8 +562,6 @@ async function agendar() {
     
     // Aguarda um instante para garantir a atualização dos dados
     await new Promise(resolve => setTimeout(resolve, 500));
-    
-    await carregarAgendamentos();
 
 
   } catch (erro) {
