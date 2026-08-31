@@ -47,7 +47,12 @@ async function carregarAgendamentos() {
 
   try {
 
-    const resposta = await fetch(API_URL);
+    // Evita que o navegador reutilize uma resposta antiga do GET
+    const url = API_URL + '?t=' + Date.now();
+
+    const resposta = await fetch(url, {
+      cache: 'no-store'
+    });
 
     agendamentos = await resposta.json();
 
@@ -66,7 +71,6 @@ async function carregarAgendamentos() {
   }
 
 }
-
 
 // =====================================================
 // CRIAR HORÁRIOS
