@@ -16,7 +16,7 @@ const HORARIOS = [
 ];
 
 const API_URL =
-'https://script.google.com/macros/s/AKfycbysQsC4As_tu6RuKWVOxpozlvVULs95H3R1uOG_e3VuTuf2wrMunGyKAb1GMwAu_m4/exec';
+'https://script.google.com/macros/s/AKfycbxeF8RLEBdFn4VCyQNhGtBjYuB7IXV5C_2jNviRS4ltGl3SHwkwGpVpRDewlME4tYMU/exec';
 
 let agendamentos = [];
 let selecionados = new Set();
@@ -529,22 +529,18 @@ async function agendar() {
     msg(
       'Agendamento realizado com sucesso!'
     );
-
-
+    
     selecionados.clear();
-
-    document.getElementById(
-      'professor'
-    ).value = '';
-
-
-    document.getElementById(
-      'horario'
-    ).selectedIndex = -1;
-
-
+    
+    document.getElementById('professor').value = '';
+    
+    document.getElementById('horario').selectedIndex = -1;
+    
     atualizarPeriodo();
-
+    
+    // Aguarda um instante para garantir a atualização dos dados
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
     await carregarAgendamentos();
 
 
