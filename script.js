@@ -47,7 +47,6 @@ async function carregarAgendamentos() {
 
   try {
 
-    // Evita que o navegador reutilize uma resposta antiga do GET
     const url = API_URL + '?t=' + Date.now();
 
     const resposta = await fetch(url, {
